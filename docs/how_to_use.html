@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+    <title>fast-html-template の使い方</title>
+<style type="text/css">
+<!--
+
+h2 {
+    border-bottom: 2px solid #898989;
+}
+
+dl dt {
+    font-weight: bold;
+}
+dl dd {
+    margin: 0.5em 0 1.5em 1em;
+}
+-->
+</style>
+</head>
+<body>
+<h1>fast-html-template の使い方</h1>
+
+<h2>fast-html-template とは</h2>
+<p>HTMLをテンプレートとして扱う Ruby モジュールです。<br />
+HTML/Template を参考にしてあるので、
+同じような使い方ができ、機能を拡張してあります。<br />
+時間のかかっていた繰り返しの処理を、大幅に短縮しました。</p>
+
+<h2>インストール</h2>
+<p>インストールは特に必要ありません。<br />
+Ruby スクリプトから fast-html-template.rb を require して下さい。</p>
+
+<h2>使い方</h2>
+
+<h3>テンプレート側で使用できるタグ</h3>
+<p>各タグの詳しい使い方は、付属サンプルを参考にしてください。</p>
+<dl>
+<dt>&lt;!var:PARAMETER_NAME&gt;</dt>
+<dd>HTML::Template#param({PARAMETER_NAME => VAL})を呼ぶと、単純に VAL に変換されます。</dd>
+<dt>&lt;!include:FILE_PATH&gt;</dt>
+<dd>単純に FILE_PATH で指定されたファイルに置換されます。</dd>
+<dt>&lt;!if:PARAMETER_NAME&gt;<br />
+&lt;!ifend:PARAMETER_NAME&gt;</dt>
+<dd>囲まれた範囲をブロックとして、条件分岐を行います。入れ子にすることも可能です。<br />
+値が nil 以外で存在する時に、囲まれた範囲を表示します。</dd>
+<dt>&lt;!loop:PARAMETER_NAME&gt;<br />
+&lt;!loopend:PARAMETER_NAME&gt;</dt>
+<dd>囲まれた範囲をブロックとして、繰り返しを行います。入れ子にすることも可能です。<br />
+HTML::Template#param で、対応する PARAMETER_NAME の値が存在しない、<br />
+若しくは nil の場合、処理を行いません。（0回繰り返します）</dd>
+<dt>&lt;!begin:PARAMETER_NAME&gt;<br />
+&lt;!end:PARAMETER_NAME&gt;</dt>
+<dd>従来との互換性のために用意したタグです。<br />
+このタグは &lt;!if:&gt;&lt;!loop:&gt; 両方の働きをすることができます。</dd>
+<dt>&lt;!unless:PARAMETER_NAME&gt;<br />
+&lt;!unlessend:PARAMETER_NAME&gt;</dt>
+<dd>囲まれた範囲をブロックとして、条件分岐を行いますが、<br />
+&lt;!if:&gt; タグとは逆の使い方で、値が nil の時に、囲まれた範囲を表示します。<br />
+このタグを入れ子にすることはできますが、このタグに入れ子にすることはできません。</dd>
+<dt>&lt;!preprocess:PROC_NAME&gt;</dt>
+<dd>このタグは &lt;!var:&gt; タグとセットで使います。<br />
+Ruby スクリプト側で、HTML::Template#set_prep({PROC_NAME => proc})を呼び、<br />
+&lt;!var:val&gt; の直前に置くことで、val を proc で処理した結果を返します。</dd>
+<dt>&lt;!proc:PROC_NAME&gt;<br />
+&lt;!var:PARAMETER_NAME&gt;*引数*<br />
+&lt;!procend:PROC_NAME&gt;</dt>
+<dd>このタグも、&lt;!var:&gt; タグとセットで使います。<br />
+Rubyスクリプト側で、HTML::Template#set_proc({PROC_NAME => proc})を呼び、<br />
+&lt;!var:val&gt;、引数をはさむことによって、複数の引数を持つ proc を指定できます。<br />
+引数は全て文字列として、扱われます。<br />
+数値として使いたい場合は、必要に応じて proc 側で型変換を行ってください。<br />
+例：<br />
+&lt;!proc:aaa&gt;&lt;!var:bbb&gt;6,15,hello,!!!&lt;!procend:aaa&gt;</dd>
+</dl>
+
+<h3>Rubyスクリプト側で使用できるメソッド</h3>
+<dl>
+<dt>HTML::Template#new( file = nil )</dt>
+<dd>file にはテンプレートとして使用するファイルのパスを渡します。<br />
+が、渡さないこともできるし、nil を渡すこともできます。<br />
+file をもとに、新しい HTML::Template オブジェクトを生成します。</dd>
+<dt>HTML::Template#set_html( html )</dt>
+<dd>new メソッドで nil を渡した場合、若しくは何も渡さなかった場合、<br />
+文字列 html をテンプレートしてセットすることができます。</dd>
+<dt>HTML::Template#param( hash = {} )<br />
+HTML::Template#expand( hash = {} )</dt>
+<dd>置換する文字列、ループ、条件分岐をハッシュで指定します。<br />
+配列を指定すると、その部分はループになります。</dd>
+<dt>HTML::Template#output</dt>
+<dd>テンプレートを処理した結果を返します。<br />
+必ず最後に呼んでください。</dd>
+<dt>HTML::Template#set_prep( hash = {} )</dt>
+<dd>&lt;!preprocess:PROC_NAME&gt; タグで使用する proc をセットします。<br />
+ひとつしか設定することができません。<br />
+2回呼んだ場合、新しい方で上書きされます。</dd>
+<dt>HTML::Template#def_prep( proc = nil )</dt>
+<dd>この関数を呼ぶと、&lt;!preprocess:PROC_NAME&gt; タグがない場合にも<br />
+&lt;!var:value&gt; タグの結果を proc で処理します。<br />
+ただし、&lt;!preprocess:PROC_NAME&gt; タグがある場合は、そちらが優先されます。</dd>
+<dt>HTML::Template#set_proc( hash = {} )</dt>
+<dd>&lt;!proc:PROC_NAME&gt; タグで使用する proc をセットします。<br />
+引数を複数個自由に設定できますが、<br />
+&lt;!proc:PROC_NAME&gt; との、個数は同一の必要があります。</dd>
+</dl>
+
+<h2>付属サンプルについて</h2>
+付属サンプルは、Ruby スクリプトの動く環境でご覧下さい。<br />
+また、fast-html-template.rb を同層に置く必要があります。<br /><br />
+<dl>
+<dt>iftest.rb, iftest.html</dt>
+<dd>&lt;!if:PARAMETER_NAME&gt; と &lt;!unless:PARAMETER_NAME&gt; の<br />
+　単純なサンプルです。</dd>
+<dt>ifnest.rb, ifnest.html</dt>
+<dd>&lt;!if&gt; タグをネストした場合のサンプルです。<br />
+　Rubyスクリプト側のモデルデータの値を変えてみるとわかり易いです。</dd>
+<dt>looptest.rb, looptest.html</dt>
+<dd>&lt;!loop&gt; タグの単純なサンプルです。配列の要素の数だけ繰り返します。<br />
+　また、後半の文字列は、時間の比較のためのもので、&lt;!loop&gt; タグとは関係ありません。</dd>
+<dt>preprocess.rb, preprocess.html<br />
+prenest.rb, prenest.html</dt>
+<dd>&lt;!preprocess&gt; タグの単純なサンプルです。<br />
+　set_prep, def_prep メソッドにも注意してください。<br />
+　ソースを表示することで、&lt;!preprocess&gt; タグの効果を知ることができます。</dd>
+<dt>proc.rb, proc.html</dt>
+<dd>&lt;!proc&gt; タグの単純なサンプルです。<br />
+　&lt;!var:value&gt; を基本の文字列とし、引数で処理しています。</dd>
+</dl>
+
+<h2>fast-html-template ChangeLog</h2>
+<ul>
+    <li>Version 0.1
+        <ul>
+            <li>9/05 初リリース</li>
+        </ul>
+    </li>
+</ul>
+
+---------------------------------------------------<br />
+Copyright (C) 2005 Community Engine Inc. All rights reserved.<br />
+Author : ede<br />
+---------------------------------------------------<br />
+
+</body>
+</html>

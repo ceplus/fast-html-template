@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+    <title>fast-html-template の使い方</title>
+<style type="text/css">
+<!--
+
+h2 {
+    border-bottom: 2px solid #898989;
+}
+
+dl dt {
+    font-weight: bold;
+}
+dl dd {
+    margin: 0.5em 0 1.5em 1em;
+}
+-->
+</style>
+</head>
+<body>
+<h1>fast-html-template とは何か？</h1>
+<p>fast-html-template とは、CGI 等において、HTML をテンプレートとして扱うためのRubyモジュールです。HTML のテンプレートを作成する側は、プログラミングの知識を特に必要としないので、デザインとロジックの分離を容易に行うことができます。また、従来の HTML/Template と同じ使い方をすることができるため、 fast-html-template への移行を簡単に行うことができます。<br />
+<img src="fhtmpl_graph.png" alt="他のHTMLテンプレートとの速度比較表" /><br />
+      (fast-html-template に含まれる looptest.rb, looptest.html を使用。)      </p>
+
+<h2>fast-html-template の特徴</h2>
+<h3>高速な動作</h3>
+<p>fast-html-template のコンセプトは、名前にもある通りその速度にあります。 新しいアルゴリズムでコードが書いてあるため、 PHP にも引けを取らない高速な動作が期待できます。 繰り返し部分で特にその効果が発揮されます。</p>
+
+<h3>従来のtemplateとの互換性</h3>
+<p>現在多く使われている HTML/Template と、ほぼ同様の使い方ができるため、
+ require しているファイルの名前を変えるだけで使用することができます。(一部例外あり)</p>
+
+<h3>機能拡張</h3>
+<p>さらに、いくつかの機能拡張を施してあるため、
+  HTML側からも CGI 側からも変更のできる、より自由で柔軟なコードを
+  簡単に書くことができます。</p> 
+
+<h2>ドキュメント</h2>
+    <p>さらに詳細な情報は <a href="how_to_use.html">fast-heml-templateの使い方</a>をごらんください。</p>
+
+</body>
+</html>
